@@ -240,6 +240,15 @@ if __name__ == "__main__":
         album = AudioSegment.from_file(FILENAME, 'mp3')
     print("Audio file loaded")
 
+    #given the length of the album, determine the split size, for 5 min segment each
+    albumLen = len(album)
+    print("Album Len: " + albumLen)
+
+    numTracks = albumLen/5;
+    for i, track in enumerate(numTracks):
+        tracks_start.append(i+5*1000)
+	tracks_titles.append(
+
     tracks_start.append(len(album))  # we need this for the last track/split
 
     print("Starting to split")
