@@ -197,28 +197,9 @@ if __name__ == "__main__":
     tracks_start = []
     tracks_titles = []
 
-    print("Parsing " + TRACKS_FILE_NAME)
-    with open(TRACKS_FILE_NAME) as tracks_file:
-        time_elapsed = '0:00:00'
-        for i, line in enumerate(tracks_file):
-            curr_start, curr_title = track_parser(line)
-
-            if DRYRUN:
-                print(curr_title + " *** " + curr_start)
-
-            if DURATION:
-                t_start = time_to_seconds(time_elapsed)
-                time_elapsed = update_time_change(time_elapsed, curr_start)
-            else:
-                t_start = time_to_seconds(curr_start)
-
-            tracks_start.append(t_start*1000)
-            tracks_titles.append(curr_title)
-
     if DRYRUN:
         exit()
 
-    print("Tracks file parsed")
 
     album = None
     if YT_URL:
@@ -242,14 +223,24 @@ if __name__ == "__main__":
 
     #given the length of the album, determine the split size, for 5 min segment each
     albumLen = len(album)
-    print("Album Len: " + albumLen)
+    print("Album Len: ", albumLen)
 
-    numTracks = albumLen/5;
-    for i, track in enumerate(numTracks):
-        tracks_start.append(i+5*1000)
-	tracks_titles.append(
+    # 5 mins
+    segmentLen = 5*60*1000 
+    numTracks = int(round(albumLen/segmentLen))
+    
+    for i in range(0, numTracks):
+        print(i)
+        tracks_start.append(i*segmentLen)
+        if ALBUM:
+            tracks_titles.append(ALBUM)
+        else:
+            tracks_titles.append("Track " + str(i+1))
 
     tracks_start.append(len(album))  # we need this for the last track/split
+
+    # ['When I Was Young', 'Dogs Eating Dogs', 'Disaster', 'END']
+    # [0, 28000, 60000, 117818]
 
     print("Starting to split")
     if THREADED and NUM_THREADS > 1:
@@ -269,6 +260,8 @@ if __name__ == "__main__":
     # Non threaded execution
     else:
         tracks_titles.append("END")
+        print(tracks_titles)
+        print(tracks_start)
         for i, track in enumerate(tracks_titles):
             if i != len(tracks_titles)-1:
                 split_song(album, tracks_start, i, track, FOLDER)
