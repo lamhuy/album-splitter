@@ -15,16 +15,9 @@ from mutagen.easyid3 import EasyID3
 from pydub import AudioSegment
 from youtube_dl import YoutubeDL
 
-
-
-
-
-
-
-
 if __name__ == "__main__":
     # arg parsing
-    parser = argparse.ArgumentParser(description='Split a single-file mp3 Album into its tracks.')
+    parser = argparse.ArgumentParser(description='create a play list json, upload the tracks and playlist into s3.')
   
     parser.add_argument(
         "-a", "--artist",
@@ -41,11 +34,11 @@ if __name__ == "__main__":
         required=True
     )
     parser.add_argument(
-        "-dk", "--dkey", help="Specify the dharma kek value. Default: UNK", 
+        "-ak", "--artistkey", help="Specify the artist key value. Default: UNK", 
         default="UNK"
     )
     parser.add_argument(
-        "-ak", "--akey", help="Specify the album kek value. Default: noalbum", 
+        "-bk", "--albumkey", help="Specify the album key value. Default: noalbum", 
         default="noalbum"
     )
     parser.add_argument(
@@ -62,12 +55,12 @@ if __name__ == "__main__":
     PATH_MP3 = args.path  
     ALBUM = args.album
     ARTIST = args.artist       
-    DHARMA_KEY = args.dkey
-    ALBUM_KEY = args.akey   
+    ARTIST_KEY = args.akey
+    ALBUM_KEY = args.bkey   
     BUCKET_NAME = args.bucket    
     
     
-    BUCKET_PATH = DHARMA_KEY + '/' + ALBUM_KEY + '/'
+    BUCKET_PATH = ARTIST_KEY + '/' + ALBUM_KEY + '/'
     S3_BUCKET = 'http://'+BUCKET_NAME+'.s3-website-us-east-1.amazonaws.com/'
     s3 = boto3.resource('s3')
     
@@ -115,25 +108,12 @@ if __name__ == "__main__":
     
     #upload playlist into aws 
     print('Uploading playlist')
-
-  
-    # Call S3 to list current buckets
-    #response = s3.list_buckets()
-
-    # Get a list of all bucket names from the response
-    #buckets = [bucket['Name'] for bucket in response['Buckets']]
-
-    # Print out the bucket list
-    #print("Bucket List: %s" % buckets)
-    
-    
-    filename = 'data.json'
-    
+    filename = 'playlist_' + ALBUM_KEY + '.json'  
     
     # Uploads the given file using a managed uploader, which will split up large
     # files automatically and upload parts in parallel.
     s3.Object(BUCKET_NAME, BUCKET_PATH +filename).put(Body=json)
     
-    #download dhramaCast_DHARMA_KEY.json, append this playlist info, then upload
+    #download dhramaCast_ARTIST_KEY.json, append this playlist info, then upload
     
     

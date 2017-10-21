@@ -50,6 +50,31 @@ This script is for you!
 
 ## Examples
 
+### Running upload_s3 
+python upload_s3.py -b "s3bucketname" -p "chicken - farm" --album "Test Album" --artist "artist name" -ak "UNK" -bk "noalbum"
+  -h, --help            show this help message and exit
+  -a ARTIST, --artist ARTIST
+                        Specify the artist that the json is tagged with.
+                        Default: no tag
+  -A ALBUM, --album ALBUM
+                        Specify the album that the json is tagged with .
+                        Default: no tag
+  -p PATH, --path PATH  Specify the relative path to tracks folder. Default:
+                        tracks.txt
+  -ak ARTISTKEY, --artistkey ARTISTKEY
+                        Specify the artist key value. Default: UNK
+  -bk ALBUMKEY, --albumkey ALBUMKEY
+                        Specify the album key value. Default: noalbum
+  -b BUCKET, --bucket BUCKET
+                        Specify the S3 bucket name.
+  -t TRACKS, --tracks TRACKS
+                        Specify the tracks file. Default: tracks.json
+
+1. This read trakcs.json generated from split.py by default
+2. It will build a playlist_ARTISTKEY.json
+3. Upload the playlist to S3 bucket inside ALBUMKEY/ARTISTKEY/ subdirectory
+4. Upload all the mp3 to S3 bucket inside ALBUMKEY/ARTISTKEY/ subdirectory
+
 ### Downloading and splitting an album from YouTube
 
 1. This is the album I want to download and split: `https://www.youtube.com/watch?v=p_uqD4ng9hw`
