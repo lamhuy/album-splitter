@@ -74,12 +74,11 @@ python upload_s3.py -b "s3bucketname" -p "chicken - farm" --album "Test Album" -
 
 1. This read trakcs.json generated from split.py by default
 2. It will build a playlist_ARTISTKEY.json
-3. Upload the playlist to S3 bucket inside ALBUMKEY/ARTISTKEY/ subdirectory
-4. Upload all the mp3 to S3 bucket inside ALBUMKEY/ARTISTKEY/ subdirectory
+3. Upload the playlist to S3 bucket inside ARTISTKEY/ALBUMKEY/ subdirectory
+4. Upload all the mp3 to S3 bucket inside ARTISTKEY/ALBUMKEY/ subdirectory
+5. Add or append this album to existing dharmaCast_ARTISTKEY.json in ARTISTKEY subdirectory
+6. Append new ARTISTKEY to existing dharmaCast.json in root directory
 
-```
-Example: python upload_s3.py --path "chicken - farm" --artist "Thich Nhat Hanh" --album "chickAlbum" --artistkey "TNH" --albumkey "CA" --bucket "dharmacast"
-```
 
 ### Downloading and splitting an album from YouTube
 
