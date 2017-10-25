@@ -51,6 +51,7 @@ This script is for you!
 ## Examples
 
 ### Running upload_s3 
+```
 python upload_s3.py -b "s3bucketname" -p "chicken - farm" --album "Test Album" --artist "artist name" -ak "UNK" -bk "noalbum"
   -h, --help            show this help message and exit
   -a ARTIST, --artist ARTIST
@@ -69,11 +70,16 @@ python upload_s3.py -b "s3bucketname" -p "chicken - farm" --album "Test Album" -
                         Specify the S3 bucket name.
   -t TRACKS, --tracks TRACKS
                         Specify the tracks file. Default: tracks.json
+```
 
 1. This read trakcs.json generated from split.py by default
 2. It will build a playlist_ARTISTKEY.json
 3. Upload the playlist to S3 bucket inside ALBUMKEY/ARTISTKEY/ subdirectory
 4. Upload all the mp3 to S3 bucket inside ALBUMKEY/ARTISTKEY/ subdirectory
+
+```
+Example: python upload_s3.py --path "chicken - farm" --artist "Thich Nhat Hanh" --album "chickAlbum" --artistkey "TNH" --albumkey "CA" --bucket "dharmacast"
+```
 
 ### Downloading and splitting an album from YouTube
 
