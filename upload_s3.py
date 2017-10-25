@@ -56,8 +56,8 @@ if __name__ == "__main__":
     PATH_MP3 = args.path  
     ALBUM_NAME = args.album
     ARTIST_NAME = args.artist       
-    ARTIST_KEY = args.akey
-    ALBUM_KEY = args.bkey   
+    ARTIST_KEY = args.artistkey
+    ALBUM_KEY = args.albumkey   
     BUCKET_NAME = args.bucket    
     
     
@@ -73,9 +73,9 @@ if __name__ == "__main__":
     
     #tracks_titles=['Đường Xưa Mây Trắng'.encode('utf8'), 'Dogs Eating Dogs', 'Disaster', 'END']
     #tracks_titles=['abc', 'Dogs Eating Dogs', 'Disaster', 'END']
-    json = {}
-    json["title"] = ALBUM_NAME
-    json["playlist"] = []
+    playlist_json = {}
+    playlist_json["title"] = ALBUM_NAME
+    playlist_json["playlist"] = []
     for i, track in enumerate(tracks_titles):
       #  track = track.decode('utf-8')
         if(i == len(tracks_titles)-1):
@@ -83,14 +83,14 @@ if __name__ == "__main__":
             
         #print(i)
         #print(len(tracks_titles))
-        data = {}
-        data["title"] = track
+        playlist_track = {}
+        playlist_track["title"] = track
         if ARTIST_NAME:
-            data["artist"] = ARTIST_NAME
-        data["src"] = S3_BUCKET _ BUCKET_PATH + track + '.mp3'
+            playlist_track["artist"] = ARTIST_NAME
+        playlist_track["src"] = S3_BUCKET + BUCKET_PATH + track + '.mp3'
         
-        json["playlist"].append(data)
-    print(json) 
+        playlist_json["playlist"].append(playlist_track)
+    #print(playlist_json) 
     
     print('Uploading mp3 tracks')
     dirPath = os.path.dirname(os.path.realpath(__file__))  # /home/user/test
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         if(i == len(tracks_titles)-1):
             break;
         mp3Filename = dirPath + '/' + PATH_MP3+ '/' + track+'.mp3'
-        s3.Object(BUCKET_NAME, BUCKET_PATH + track+'.mp3').put(Body=open(mp3Filename, 'rb'))
+        #s3.Object(BUCKET_NAME, BUCKET_PATH + track+'.mp3').put(Body=open(mp3Filename, 'rb'))
     
     
     
@@ -109,15 +109,13 @@ if __name__ == "__main__":
     
     # Uploads the given file using a managed uploader, which will split up large
     # files automatically and upload parts in parallel.
-    s3.Object(BUCKET_NAME, BUCKET_PATH +PLAYLIST_FILE).put(Body=json)
+    print(playlist_json)
+    #s3.Object(BUCKET_NAME, BUCKET_PATH +PLAYLIST_FILE).put(Body=playlist_json)
     
     
     
     #download dhramaCast_ARTIST_KEY.json, append this dharmaCast_ARTIST_KEY.json info, then upload
     ARTIST_JSON_FILE = ARTIST_KEY + '/dharmaCast_'+ARTIST_KEY +'.json'
-    S3_BUCKET = 'http://'+BUCKET_NAME+'.s3-website-us-east-1.amazonaws.com/'
-    s3 = boto3.resource('s3')
-
 
     #adding album into into artist dharma cast list
     try:
@@ -137,13 +135,13 @@ if __name__ == "__main__":
             artist_json['playlists'].append(data)
         else:
             raise
-
-    print(artist_json)
+    
+    print('Artist play list before')    
+#    print(artist_json)    
     print(artist_json["playlists"])
     albumExist = False
 
-    for i, playlist in enumerate(artist_json["playlists"]):
-        print(playlist["listName"])
+    for i, playlist in enumerate(artist_json["playlists"]):        
         if(ARTIST_KEY == playlist["listName"]):
             albumExist = True
             break;
@@ -171,6 +169,7 @@ if __name__ == "__main__":
     artistExist = False
 
     dharma_json = json.load(dharma_json)
+    print("Current Dharma.json file content: ")
     print(dharma_json)
 
     for i, artist in enumerate(dharma_json):
