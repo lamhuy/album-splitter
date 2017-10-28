@@ -47,19 +47,26 @@ if __name__ == "__main__":
         required=True        
     )
     parser.add_argument(
-        "-t", "--tracks", help="Specify the tracks file. Default: tracks.json", default="tracks.json"
+        "--dry-run",
+        dest='dry',
+        action='store_true',
+        help="Don't upload any file.",
+        default=False
     )
+
 
     args = parser.parse_args()
     
-    TRACKS_FILE_NAME = args.tracks
+    
     PATH_MP3 = args.path  
     ALBUM_NAME = args.album
     ARTIST_NAME = args.artist       
     ARTIST_KEY = args.artistkey
     ALBUM_KEY = args.albumkey   
     BUCKET_NAME = args.bucket    
-    
+    DRYRUN = args.dry
+        
+    TRACKS_FILE_NAME = args.album + '.json'
     
     BUCKET_PATH = ARTIST_KEY + '/' + ALBUM_KEY + '/'
     S3_BUCKET = 'http://'+BUCKET_NAME+'.s3-website-us-east-1.amazonaws.com/'
@@ -99,18 +106,21 @@ if __name__ == "__main__":
         if(i == len(tracks_titles)-1):
             break;
         mp3Filename = dirPath + '/' + PATH_MP3+ '/' + track+'.mp3'
-        #s3.Object(BUCKET_NAME, BUCKET_PATH + track+'.mp3').put(Body=open(mp3Filename, 'rb'))
+        if not DRYRUN:
+            s3.Object(BUCKET_NAME, BUCKET_PATH + track+'.mp3').put(Body=open(mp3Filename, 'rb'))
     
     
     
-    #upload playlist into aws 
-    print('Uploading playlist')
+    #upload playlist into aws    
     PLAYLIST_FILE = 'playlist_' + ALBUM_KEY + '.json'  
+    print('Uploading playlist:' + PLAYLIST_FILE)
     
     # Uploads the given file using a managed uploader, which will split up large
     # files automatically and upload parts in parallel.
-    print(playlist_json)
-    #s3.Object(BUCKET_NAME, BUCKET_PATH +PLAYLIST_FILE).put(Body=playlist_json)
+    #print(playlist_json)
+    print(json.dumps(playlist_json, ensure_ascii=False).encode('utf8'))
+    if not DRYRUN:
+        s3.Object(BUCKET_NAME, BUCKET_PATH +PLAYLIST_FILE).put(Body=playlist_json)
     
     
     
@@ -118,6 +128,8 @@ if __name__ == "__main__":
     ARTIST_JSON_FILE = ARTIST_KEY + '/dharmaCast_'+ARTIST_KEY +'.json'
 
     #adding album into into artist dharma cast list
+    
+    #try to find artist json file, that list all artist album
     try:
         artist_json = s3.Object(BUCKET_NAME, ARTIST_JSON_FILE).get()["Body"]
         artist_json = json.load(artist_json)
@@ -127,12 +139,9 @@ if __name__ == "__main__":
             print("The object does not exist. creating ARTIST_JSON_FILE")
             artist_json = {}
             artist_json['title'] = ARTIST_NAME
-            data = {}
-            data['title'] = ALBUM_NAME
-            data['listName'] = ALBUM_KEY
-            data['id'] = 1
+            artist_json['key'] = ARTIST_KEY           
             artist_json['playlists'] = []
-            artist_json['playlists'].append(data)
+           
         else:
             raise
     
@@ -142,7 +151,7 @@ if __name__ == "__main__":
     albumExist = False
 
     for i, playlist in enumerate(artist_json["playlists"]):        
-        if(ARTIST_KEY == playlist["listName"]):
+        if(ALBUM_KEY == playlist["listName"]):
             albumExist = True
             break;
 
@@ -157,7 +166,8 @@ if __name__ == "__main__":
         artist_json["playlists"].append(data)
         print(artist_json["playlists"])
         #upload new file into S3
-        #s3.Object(BUCKET_NAME, ARTIST_JSON_FILE).put(Body=artist_json)
+        if not DRYRUN:
+            s3.Object(BUCKET_NAME, ARTIST_JSON_FILE).put(Body=artist_json)
 
     else:
         print("ALBUM EXIST")
@@ -172,8 +182,7 @@ if __name__ == "__main__":
     print("Current Dharma.json file content: ")
     print(dharma_json)
 
-    for i, artist in enumerate(dharma_json):
-        print(artist["listName"])
+    for i, artist in enumerate(dharma_json):        
         if(ARTIST_KEY == artist["listName"]):
             artistExist = True
             break;
@@ -187,9 +196,11 @@ if __name__ == "__main__":
         data['listName'] = ARTIST_KEY
         data['id'] = len(dharma_json)+1
         dharma_json.append(data)
-        print(dharma_json)
+        #print(dharma_json)
+        print(json.dumps(dharma_json, ensure_ascii=False).encode('utf8'))
         #upload new file into S3
-        #s3.Object(BUCKET_NAME, ARTIST_JSON_FILE).put(Body=artist_json)
+        if not DRYRUN:
+            s3.Object(BUCKET_NAME, DHARMA_JSON_FILE).put(Body=dharma_json)
 
     else:
         print("ARTIST EXIST")

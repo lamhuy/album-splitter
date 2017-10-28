@@ -45,7 +45,7 @@ def split_song(album, tracks_start, index, track, FOLDER):
     end = tracks_start[index+1]
     duration = end-start
     track_path = '{}/{}.mp3'.format(FOLDER, track)
-    album[start:][:duration].export(track_path, format="mp3")
+    album[start:][:duration].export(track_path, bitrate='64k', format="mp3")
 
     print("\t\tTagging")
     song = EasyID3(track_path)
@@ -305,8 +305,8 @@ if __name__ == "__main__":
     
     
     #output track.json
-    trackFile = open('tracks.json','w+')  
-    trackFile.write(json.dumps(tracks_titles))
-    
+    with open(ALBUM+'.json', 'w', encoding='utf8') as trackFile:
+        json.dump(tracks_titles, trackFile, ensure_ascii=False)
+        
     
     print("All Done")
