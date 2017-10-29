@@ -40,7 +40,8 @@ def thread_func(album, tracks_start, queue, FOLDER):
 
 
 def split_song(album, tracks_start, index, track, FOLDER):
-    print("\t{}) {}".format(str(index+1), track))
+    #print(json.dumps(nonlat, ensure_ascii=False).encode('utf8'))
+    print("\t{}) {}".format(str(index+1), track.encode()))
     start = tracks_start[index]
     end = tracks_start[index+1]
     duration = end-start
@@ -298,7 +299,8 @@ if __name__ == "__main__":
     # Non threaded execution
     else:
         tracks_titles.append("END")
-        print(tracks_titles)
+        #print(tracks_titles)
+        print(json.dumps(tracks_titles, ensure_ascii=False).encode('utf8'))
         for i, track in enumerate(tracks_titles):
             if i != len(tracks_titles)-1:
                 split_song(album, tracks_start, i, track, FOLDER)

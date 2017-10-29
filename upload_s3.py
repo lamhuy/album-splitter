@@ -73,11 +73,11 @@ if __name__ == "__main__":
     s3 = boto3.resource('s3')
     
     #if found no tracks.json will terminaet
-    with open(TRACKS_FILE_NAME) as data_file:    
+    with open(TRACKS_FILE_NAME,  encoding='utf8') as data_file:          
         tracks_titles = json.load(data_file)
+        print(json.dumps(tracks_titles, ensure_ascii=False).encode('utf8'))
         
-    print(tracks_titles)
-    
+        
     #tracks_titles=['Đường Xưa Mây Trắng'.encode('utf8'), 'Dogs Eating Dogs', 'Disaster', 'END']
     #tracks_titles=['abc', 'Dogs Eating Dogs', 'Disaster', 'END']
     playlist_json = {}
@@ -120,8 +120,7 @@ if __name__ == "__main__":
     #print(playlist_json)
     print(json.dumps(playlist_json, ensure_ascii=False).encode('utf8'))
     if not DRYRUN:
-        s3.Object(BUCKET_NAME, BUCKET_PATH +PLAYLIST_FILE).put(Body=playlist_json)
-    
+        s3.Object(BUCKET_NAME, BUCKET_PATH +PLAYLIST_FILE).put(Body=json.dumps(playlist_json, ensure_ascii=False).encode('utf8'))
     
     
     #download dhramaCast_ARTIST_KEY.json, append this dharmaCast_ARTIST_KEY.json info, then upload
@@ -164,10 +163,11 @@ if __name__ == "__main__":
         data['listName'] = ALBUM_KEY
         data['id'] = len(artist_json["playlists"])+1
         artist_json["playlists"].append(data)
-        print(artist_json["playlists"])
+        print(json.dumps(artist_json["playlists"], ensure_ascii=False).encode('utf8'))
+        #print(artist_json["playlists"])
         #upload new file into S3
         if not DRYRUN:
-            s3.Object(BUCKET_NAME, ARTIST_JSON_FILE).put(Body=artist_json)
+            s3.Object(BUCKET_NAME, ARTIST_JSON_FILE).put(Body=json.dumps(artist_json, ensure_ascii=False).encode('utf8'))
 
     else:
         print("ALBUM EXIST")
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         print(json.dumps(dharma_json, ensure_ascii=False).encode('utf8'))
         #upload new file into S3
         if not DRYRUN:
-            s3.Object(BUCKET_NAME, DHARMA_JSON_FILE).put(Body=dharma_json)
+            s3.Object(BUCKET_NAME, DHARMA_JSON_FILE).put(Body= json.dumps(dharma_json, ensure_ascii=False).encode('utf8'))
 
     else:
         print("ARTIST EXIST")
