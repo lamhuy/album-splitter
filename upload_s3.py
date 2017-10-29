@@ -43,6 +43,9 @@ if __name__ == "__main__":
         default="noalbum"
     )
     parser.add_argument(
+        "-bd", "--albumdate", help="Specify the album date value.",         
+    )
+    parser.add_argument(
         "-b", "--bucket", help="Specify the S3 bucket name.", 
         required=True        
     )
@@ -60,9 +63,10 @@ if __name__ == "__main__":
     
     PATH_MP3 = args.path  
     ALBUM_NAME = args.album
-    ARTIST_NAME = args.artist       
-    ARTIST_KEY = args.artistkey
     ALBUM_KEY = args.albumkey   
+    ALBUM_DATE = args.albumdate
+    ARTIST_NAME = args.artist       
+    ARTIST_KEY = args.artistkey    
     BUCKET_NAME = args.bucket    
     DRYRUN = args.dry
         
@@ -161,6 +165,8 @@ if __name__ == "__main__":
         data = {}
         data['title'] = ALBUM_NAME
         data['listName'] = ALBUM_KEY
+        if ALBUM_DATE:
+            data['date'] = ALBUM_DATE
         data['id'] = len(artist_json["playlists"])+1
         artist_json["playlists"].append(data)
         print(json.dumps(artist_json["playlists"], ensure_ascii=False).encode('utf8'))
