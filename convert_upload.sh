@@ -1,12 +1,16 @@
-export album='Nhận Thức Về Vô Thường'
-export albumKey='NTVVT'
+
+export album='Cần Quên - Nên Nhớ'
+export albumKey='CQCN'
+export albumSearch='Can Quan Nho CQCN'
 export artist='Thích Pháp Hòa'
 export aristKey='TPH'
-export albumDate = '04/16/2017'
+export artistSearch='Phap Hoa TPH PH'
+export albumDate='09/25/2016'
+export ytlink='https://www.youtube.com/watch?v=Dd5qO3o2tKc'
 
 echo $album
-echo $artist
 
-python split.py -yt https://www.youtube.com/watch?v=mJLTuIby3b4 --album "$album" --artist "$artist" -sd "5" 
 
-python upload_s3.py -b "dharmacast" -p "$artist - $album" --album "$album" --artist "$artist" -ak "$aristKey" -bk "$albumKey" -bd "$albumDate"
+python3 split.py -yt $ytlink --album "$album" --artist "$artist" -sd "10" 
+
+python3 upload_s3.py -b 'dharmacast' -p "$artist - $album" --album "$album" --artist "$artist" -ak "$aristKey" -Ak "$albumKey" -Ad "$albumDate" -As "$albumSearch" -as "$artistSearch"

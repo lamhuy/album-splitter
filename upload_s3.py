@@ -31,6 +31,16 @@ if __name__ == "__main__":
         default=None
     )
     parser.add_argument(
+        "-as", "--artistsearch",
+        help="Specify the artist search phrase. Default: no tag",
+        default=None
+    )
+    parser.add_argument(
+        "-As",  "--albumsearch",
+        help="Specify the album search phrase . Default: no tag",
+        default=None
+    )
+    parser.add_argument(
         "-p", "--path", help="Specify the relative path to tracks folder. Default: tracks.txt", 
         required=True
     )
@@ -39,11 +49,11 @@ if __name__ == "__main__":
         default="UNK"
     )
     parser.add_argument(
-        "-bk", "--albumkey", help="Specify the album key value. Default: noalbum", 
+        "-Ak", "--albumkey", help="Specify the album key value. Default: noalbum", 
         default="noalbum"
     )
     parser.add_argument(
-        "-bd", "--albumdate", help="Specify the album date value.",         
+        "-Ad", "--albumdate", help="Specify the album date value.",         
     )
     parser.add_argument(
         "-b", "--bucket", help="Specify the S3 bucket name.", 
@@ -65,8 +75,10 @@ if __name__ == "__main__":
     ALBUM_NAME = args.album
     ALBUM_KEY = args.albumkey   
     ALBUM_DATE = args.albumdate
+    ALBUM_SEARCH = args.albumsearch
     ARTIST_NAME = args.artist       
-    ARTIST_KEY = args.artistkey    
+    ARTIST_KEY = args.artistkey   
+    ARTIST_SEARCH = args.artistsearch
     BUCKET_NAME = args.bucket    
     DRYRUN = args.dry
         
@@ -81,9 +93,7 @@ if __name__ == "__main__":
         tracks_titles = json.load(data_file)
         print(json.dumps(tracks_titles, ensure_ascii=False).encode('utf8'))
         
-        
-    #tracks_titles=['Đường Xưa Mây Trắng'.encode('utf8'), 'Dogs Eating Dogs', 'Disaster', 'END']
-    #tracks_titles=['abc', 'Dogs Eating Dogs', 'Disaster', 'END']
+ 
     playlist_json = {}
     playlist_json["title"] = ALBUM_NAME
     playlist_json["playlist"] = []
@@ -167,6 +177,10 @@ if __name__ == "__main__":
         data['listName'] = ALBUM_KEY
         if ALBUM_DATE:
             data['date'] = ALBUM_DATE
+        if ALBUM_SEARCH:
+            data['albumsearch'] = ALBUM_SEARCH
+        else:
+            data['albumsearch'] = ALBUM_NAME + ' ' + ALBUM_KEY
         data['id'] = len(artist_json["playlists"])+1
         artist_json["playlists"].append(data)
         print(json.dumps(artist_json["playlists"], ensure_ascii=False).encode('utf8'))
@@ -200,6 +214,10 @@ if __name__ == "__main__":
         data = {}
         data['title'] = ARTIST_NAME
         data['listName'] = ARTIST_KEY
+        if ARTIST_SEARCH:
+            data['artistsearch'] = ARTIST_SEARCH
+        else:
+            data['artistsearch'] = ARTIST_NAME + ' ' + ARTIST_KEY
         data['id'] = len(dharma_json)+1
         dharma_json.append(data)
         #print(dharma_json)
