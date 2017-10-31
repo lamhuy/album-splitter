@@ -54,8 +54,10 @@ if __name__ == "__main__":
             if(row['active'] == 'x'):
                 print("Processing: ", row['artist'].encode() ,row ['album'].encode())
                 #                  TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED,  NUM_THREADS, SEGMENT_DURATION, DRYRUN):
-                module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", "TRUE")
-                module_upload_s3.upload_s3(row ['album'],row ['albumKey'], row ['albumDate'], row ['albumSearch'], row ['albumSrc'], row ['albumLoc'], row ['artist'], row ['artistKey'], row ['artistSearch'], row ['Bucket'], "dry-run")
+                module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", "")
+                module_upload_s3.upload_s3(row ['album'],row ['albumKey'], row ['albumDate'], row ['albumSearch'], row ['albumSrc'], row ['albumLoc'], row ['artist'], row ['artistKey'], row ['artistSearch'], row ['Bucket'], "")
+            else:
+                print("skipping: ", row['artist'].encode() ,row ['album'].encode(), row['active']) 
            
     
     

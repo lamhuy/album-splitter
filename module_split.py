@@ -39,7 +39,7 @@ def thread_func(album, tracks_start, queue, FOLDER):
         split_song(album, tracks_start, song_tuple[0], song_tuple[1], FOLDER)
 
 
-def split_song(album, tracks_start, index, track, FOLDER):
+def split_song(album, tracks_start, index, track, FOLDER, ARTIST, ALBUM):
     #print(json.dumps(nonlat, ensure_ascii=False).encode('utf8'))
     print("\t{}) {}".format(str(index+1), track.encode()))
     start = tracks_start[index]
@@ -206,7 +206,7 @@ def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED
         print(json.dumps(tracks_titles, ensure_ascii=False).encode('utf8'))
         for i, track in enumerate(tracks_titles):
             if i != len(tracks_titles)-1:
-                split_song(album, tracks_start, i, track, FOLDER)
+                split_song(album, tracks_start, i, track, FOLDER, ARTIST, ALBUM)
     
     
     #output track.json
