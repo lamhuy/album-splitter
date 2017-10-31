@@ -16,84 +16,11 @@ from mutagen.easyid3 import EasyID3
 from pydub import AudioSegment
 from youtube_dl import YoutubeDL
 
-if __name__ == "__main__":
-    # arg parsing
-    parser = argparse.ArgumentParser(description='create a play list json, upload the tracks and playlist into s3.')
-  
-    parser.add_argument(
-        "-a", "--artist",
-        help="Specify the artist that the json is tagged with. Default: no tag",
-        default=None
-    )
-    parser.add_argument(
-        "-A",  "--album",
-        help="Specify the album that the json is tagged with . Default: no tag",
-        default=None
-    )
-    parser.add_argument(
-        "-as", "--artistsearch",
-        help="Specify the artist search phrase. Default: no tag",
-        default=None
-    )
-    parser.add_argument(
-        "-As",  "--albumsearch",
-        help="Specify the album search phrase . Default: no tag",
-        default=None
-    )
-    parser.add_argument(
-        "-Ad", "--albumdate", help="Specify the album date value.",         
-    )
-    parser.add_argument(
-        "-Al", "--albumlocation", help="Specify the album location value.",         
-    )
-    parser.add_argument(
-        "-Asc",  "--albumsource",
-        help="Specify the album source . Default: no tag",
-        default=None
-    )
-    parser.add_argument(
-        "-p", "--path", help="Specify the relative path to tracks folder. Default: tracks.txt", 
-        required=True
-    )
-    parser.add_argument(
-        "-ak", "--artistkey", help="Specify the artist key value. Default: UNK", 
-        default="UNK"
-    )
-    parser.add_argument(
-        "-Ak", "--albumkey", help="Specify the album key value. Default: noalbum", 
-        default="noalbum"
-    )
-
-    parser.add_argument(
-        "-b", "--bucket", help="Specify the S3 bucket name.", 
-        required=True        
-    )
-    parser.add_argument(
-        "--dry-run",
-        dest='dry',
-        action='store_true',
-        help="Don't upload any file.",
-        default=False
-    )
-
-
-    args = parser.parse_args()
     
-    
-    PATH_MP3 = args.path  
-    ALBUM_NAME = args.album
-    ALBUM_KEY = args.albumkey   
-    ALBUM_DATE = args.albumdate
-    ALBUM_SEARCH = args.albumsearch
-    ALBUM_SRC = args.albumsource
-    ALBUM_LOC = args.albumlocation
-    ARTIST_NAME = args.artist       
-    ARTIST_KEY = args.artistkey   
-    ARTIST_SEARCH = args.artistsearch
-    BUCKET_NAME = args.bucket    
-    DRYRUN = args.dry
-        
-    TRACKS_FILE_NAME = args.album + '.json'
+def upload_s3(ALBUM_NAME,ALBUM_KEY, ALBUM_DATE, ALBUM_SEARCH,ALBUM_SRC, ALBUM_LOC, ARTIST_NAME, ARTIST_KEY, ARTIST_SEARCH, BUCKET_NAME, DRYRUN):
+          
+    TRACKS_FILE_NAME = ALBUM_NAME + '.json'
+    PATH_MP3 = ARTIST_NAME + ' - '  + ALBUM_NAME
     
     BUCKET_PATH = ARTIST_KEY + '/' + ALBUM_KEY + '/'
     S3_BUCKET = 'http://'+BUCKET_NAME+'.s3-website-us-east-1.amazonaws.com/'
