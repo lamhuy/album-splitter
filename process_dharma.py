@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-f", "--file",
         help="Specify the artist that the json is tagged with. Default: no tag",
-        default=None
+        default='album.csv'
     )   
     parser.add_argument(
         "--dry-run",
@@ -41,21 +41,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-    FILE = args.file
-   # PATH_MP3 = args.path  
+    FILE = args.file   
     DRYRUN = args.dry
     
     
 
   
-    with open('album.csv', encoding='utf8') as csvfile:
+    with open(FILE, encoding='utf8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             if(row['active'] == 'x'):
                 print("Processing: ", row['artist'].encode() ,row ['album'].encode())
                 #                  TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED,  NUM_THREADS, SEGMENT_DURATION, DRYRUN):
-                module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", "")
-                module_upload_s3.upload_s3(row ['album'],row ['albumKey'], row ['albumDate'], row ['albumSearch'], row ['albumSrc'], row ['albumLoc'], row ['artist'], row ['artistKey'], row ['artistSearch'], row ['Bucket'], "")
+                module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", DRYRUN)
+                module_upload_s3.upload_s3(row ['album'],row ['albumKey'], row ['albumDate'], row ['albumSearch'], row ['albumSrc'], row ['albumLoc'], row ['artist'], row ['artistKey'], row ['artistSearch'], row ['Bucket'], DRYRUN)
             else:
                 print("skipping: ", row['artist'].encode() ,row ['album'].encode(), row['active']) 
            
