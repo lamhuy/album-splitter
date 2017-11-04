@@ -4,21 +4,9 @@ import os
 import re
 import sys
 import json
-import urllib.parse
-import boto3
-import botocore
-import codecs
-
-from queue import Queue
-from threading import Thread
-from uuid import uuid4
-
-from urllib.parse import urlparse, parse_qs
-from mutagen.easyid3 import EasyID3
-from pydub import AudioSegment
-from youtube_dl import YoutubeDL
 
 import module_upload_s3
+import module_delete_s3
 import module_split
 
 if __name__ == "__main__":
@@ -50,13 +38,16 @@ if __name__ == "__main__":
     with open(FILE, encoding='utf8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            if(row['active'] == 'x'):
+            if(row['flag'] == 'x'):
                 print("Processing: ", row['artist'].encode() ,row ['album'].encode())
                 #                  TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED,  NUM_THREADS, SEGMENT_DURATION, DRYRUN):
                 module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", DRYRUN)
                 module_upload_s3.upload_s3(row ['album'],row ['albumKey'], row ['albumDate'], row ['albumSearch'], row ['albumSrc'], row ['albumLoc'], row ['artist'], row ['artistKey'], row ['artistSearch'], row ['Bucket'], DRYRUN)
+            elif(row['flag'] == 'd'):
+                print("Removing this album: ", row['album'])
+                module_delete_s3.delete_s3(row ['albumKey'],row ['artistKey'],row ['Bucket'],DRYRUN)
             else:
-                print("skipping: ", row['artist'].encode() ,row ['album'].encode(), row['active']) 
+                print("skipping: ", row['artist'].encode() ,row ['album'].encode(), row['flag']) 
            
     
     
