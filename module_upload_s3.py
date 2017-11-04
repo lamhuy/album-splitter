@@ -1,21 +1,9 @@
-import argparse
 import os
 import re
 import sys
 import json
-import urllib.parse
 import boto3
 import botocore
-
-from queue import Queue
-from threading import Thread
-from uuid import uuid4
-
-from urllib.parse import urlparse, parse_qs
-from mutagen.easyid3 import EasyID3
-from pydub import AudioSegment
-from youtube_dl import YoutubeDL
-
     
 def upload_s3(ALBUM_NAME,ALBUM_KEY, ALBUM_DATE, ALBUM_SEARCH,ALBUM_SRC, ALBUM_LOC, ARTIST_NAME, ARTIST_KEY, ARTIST_SEARCH, BUCKET_NAME, DRYRUN):
           
@@ -125,7 +113,6 @@ def upload_s3(ALBUM_NAME,ALBUM_KEY, ALBUM_DATE, ALBUM_SEARCH,ALBUM_SRC, ALBUM_LO
             data['loc'] = ALBUM_LOC
         else:
             data['search'] = ALBUM_NAME + ' ' + ALBUM_KEY
-        data['id'] = len(artist_json["playlists"])+1
         artist_json["playlists"].append(data)
         print(json.dumps(artist_json["playlists"], ensure_ascii=False).encode('utf8'))
         #print(artist_json["playlists"])

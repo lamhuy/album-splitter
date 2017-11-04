@@ -198,7 +198,7 @@ if __name__ == "__main__":
             data['loc'] = ALBUM_LOC
         else:
             data['search'] = ALBUM_NAME + ' ' + ALBUM_KEY
-        data['id'] = len(artist_json["playlists"])+1
+       
         artist_json["playlists"].append(data)
         print(json.dumps(artist_json["playlists"], ensure_ascii=False).encode('utf8'))
         #print(artist_json["playlists"])
