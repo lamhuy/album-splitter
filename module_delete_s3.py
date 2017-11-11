@@ -9,12 +9,20 @@ import botocore
 def delete_s3(ALBUM_KEY, ARTIST_KEY, BUCKET_NAME, DRYRUN):
           
     BUCKET_PATH = ARTIST_KEY + '/' + ALBUM_KEY + '/'
-    S3_BUCKET = 'http://'+BUCKET_NAME+'.s3-website-us-east-1.amazonaws.com/'
-    s3 = boto3.resource('s3')
+    #S3_BUCKET = 'http://'+BUCKET_NAME+'.s3-website-us-east-1.amazonaws.com/'
     
-    if not DRYRUN: 
-        for key in bucket.list(prefix=BUCKET_PATH):
-            key.delete()
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(BUCKET_NAME)
+
+    objects_to_delete = []
+    for obj in bucket.objects.filter(Prefix=ARTIST_KEY + '/' + ALBUM_KEY + '/'):
+        objects_to_delete.append({'Key': obj.key})
+
+    bucket.delete_objects(
+        Delete={
+            'Objects': objects_to_delete
+        }
+    )
     
      
     #download dhramaCast_ARTIST_KEY.json, append this dharmaCast_ARTIST_KEY.json info, then upload
