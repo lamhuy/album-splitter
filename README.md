@@ -88,7 +88,7 @@ python upload_s3.py -b "s3bucketname" -p "chicken - farm" --album "Test Album" -
 00:06 - When I Was Young
 ...
 14:48 - Pretty Little Girl
-<start-time> - <title> <--- remove this, just as a reminder of the format
+<start-time> - <title> <--- remove this, just as a reminder of the format --->
 ```
 
 3. I execute ```python split.py -yt https://www.youtube.com/watch?v=p_uqD4ng9hw``` and wait
@@ -157,6 +157,12 @@ Dumpweed [Explicit] *** 00:00:00
 ...
 Anthem *** 00:31:40
 ```
+
+## APPENDIX
+process_dharma.py load ablum.csv file and upload/delete based on the flag in the file, x for upload, d for delete
+--dry-run is the only optional argument
+
+./process_dharma.py
 
 
 ## TODO
