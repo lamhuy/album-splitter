@@ -84,7 +84,7 @@ ydl_opts = {
 }
 
 
-def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED,  NUM_THREADS, SEGMENT_DURATION, DRYRUN):
+def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED,  NUM_THREADS, SEGMENT_DURATION, START_TIME, END_TIME, DRYRUN):
     # input validation
     if SEGMENT_DURATION is not None:
         try:
@@ -94,9 +94,24 @@ def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED
             print("That's not an int!")
             exit()
 
+    if START_TIME:        
+        h,m,s = START_TIME.split(":")        
+        startMS = (int(h)*60*60 +  int(m)*60 + int(s) )*1000
+        print("Trim start time detected at: ", startMS)
+    else :
+        startMS = 0;
+        
+    if END_TIME:    
+        h,m,s  = END_TIME.split(":");        
+        endMS =(int(h)*60*60 +  int(m)*60 + int(s) )*1000
+        print("Trim   end time detected at: ", endMS);
+    else:
+        endMS = 1000000000000;
+        
     if DRYRUN:
         print("**** DRY RUN ****")
 
+    
    
     if ALBUM and ARTIST:
         FOLDER = "{} - {}".format(ARTIST, ALBUM)
@@ -137,9 +152,6 @@ def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED
 
                 tracks_start.append(t_start*1000)
                 tracks_titles.append(curr_title)
-            
-    if DRYRUN:
-        exit()
 
 
     album = None
@@ -151,7 +163,7 @@ def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED
         if not os.path.isfile(FILENAME):
                 print("Downloading video from YouTube")
                 with YoutubeDL(ydl_opts) as ydl:
-                    ydl.download(['http://www.youtube.com/watch?v=' + video_id])
+                    ydl.download([YT_URL])
                 print("\nConversion complete")
         else:
                 print("Found matching file")
@@ -166,20 +178,31 @@ def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED
     albumLen = len(album)
     print("Album Len: ", albumLen)
 
+    if(endMS > albumLen):
+        print("end time greater than alumLen. Ignore it");
+        endMS = albumLen;
+        
     if SEGMENT_DURATION is not None:
-        # 5 mins
+        # 10 mins
         segmentLen = int(SEGMENT_DURATION)*60*1000 
-        numTracks = int(round(albumLen/segmentLen))
-
+        totalTrimMS = startMS + (albumLen - endMS);
+        print("trimMS: ", totalTrimMS);
+        numTracks = int(round((albumLen-totalTrimMS)/segmentLen));
+        if numTracks == 0:
+            numTracks = 1;
+        print("numtrack: ", numTracks);
+        
         for i in range(0, numTracks):           
-            tracks_start.append(i*segmentLen)
+            tracks_start.append(i*segmentLen+startMS)
             if ALBUM:
-                tracks_titles.append('{:02d} - {}'.format(i+1, ALBUM)) #continue work here, split append the number, mismatch with tracks.json
-                
+                tracks_titles.append('{:02d} - {}'.format(i+1, ALBUM)) #continue work here, split append the number, mismatch with tracks.json                
             else:
-                tracks_titles.append('{:02d} - {} {}'.format(i+1, "Track", i+1))
+                tracks_titles.append('{:02d} - {} {}'.format(i+1, "Track", i+1));
 
-    tracks_start.append(len(album))  # we need this for the last track/split
+        if endMS != 0 :
+            tracks_start.append(endMS);  # we need this for the last track/split        
+        else :
+            tracks_start.append(len(album));  # we need this for the last track/split
 
     # ['When I Was Young', 'Dogs Eating Dogs', 'Disaster', 'END']
     # [0, 28000, 60000, 117818]
@@ -202,7 +225,10 @@ def split( TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED
     # Non threaded execution
     else:
         tracks_titles.append("END")
-        #print(tracks_titles)
+        
+        #print("tracks_titles", tracks_titles);
+        #print("tracks_start", tracks_start);
+    
         print(json.dumps(tracks_titles, ensure_ascii=False).encode('utf8'))
         for i, track in enumerate(tracks_titles):
             if i != len(tracks_titles)-1:

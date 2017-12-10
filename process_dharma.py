@@ -41,13 +41,13 @@ if __name__ == "__main__":
             if(row['flag'] == 'x'):
                 print("Processing: ", row['artist'].encode() ,row ['album'].encode())
                 #                  TRACKS_FILE_NAME, FILENAME, YT_URL, ALBUM, ARTIST, DURATION, THREADED,  NUM_THREADS, SEGMENT_DURATION, DRYRUN):
-                module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", DRYRUN)
+                module_split.split("", "", row ['albumSrc'], row ['album'], row ['artist'], "", "",  "", "10", row['start'], row['end'], DRYRUN)
                 module_upload_s3.upload_s3(row ['album'],row ['albumKey'], row ['albumDate'], row ['albumSearch'], row ['albumSrc'], row ['albumLoc'], row ['artist'], row ['artistKey'], row ['artistSearch'], row ['Bucket'], DRYRUN)
             elif(row['flag'] == 'd'):
-                print("Removing this album: ", row['album'])
+                print("Removing this album: ", row['albumKey'])
                 module_delete_s3.delete_s3(row ['albumKey'],row ['artistKey'],row ['Bucket'],DRYRUN)
             else:
-                print("skipping: ", row['artist'].encode() ,row ['album'].encode(), row['flag']) 
+                print("skipping: ", row['albumKey'].encode() ,row ['artistKey'].encode(), row['flag']) 
            
     
     
